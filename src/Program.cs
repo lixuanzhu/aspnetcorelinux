@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -21,8 +22,14 @@ namespace WebApplication1
                 .ConfigureWebHost(webBuilder =>
                 {
                     webBuilder
-                    .UseUrls(new string[] { "https://*:443"})
-                    .UseKestrel()
+                    .UseKestrel(option =>
+                    {
+                        option.Listen(IPAddress.Loopback, 5001);
+                        option.Listen(IPAddress.Loopback, 5002, listenOption =>
+                        {
+                            listenOption.UseHttps("/home/seanzhu/.dotnet/corefx/cryptography/x509stores/my/F956142EDC8E0E62EC5BCE91989E9877ABD8FE02.pfx");
+                        });
+                    })
                     .UseStartup<Startup>();
                 });
     }
